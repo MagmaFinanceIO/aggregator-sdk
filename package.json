@@ -12,6 +12,10 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "publish:test": "node version.mjs && npm publish --tag experimental"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "devDependencies": {
     "@types/bn.js": "^5.1.5",
     "@types/bun": "latest",
