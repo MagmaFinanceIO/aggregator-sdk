@@ -1,6 +1,6 @@
 {
   "name": "@magmaprotocol/aggregator-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,8 +10,20 @@
     "dev": "tsup --watch",
     "test": "node -r esm node_modules/.bin/jest",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "publish:test": "node version.mjs && npm publish --tag experimental"
+    "publish:test": "node version.mjs && npm publish --tag experimental",
+    "build:tsup": "npm run build:clean && npm run _build:node",
+    "build:clean": "rm -rf dist",
+    "_build:node": "tsup --format cjs,esm --dts",
+    "prepublishOnly": "npm run build:tsup"
   },
+  "files": [
+    "README.md",
+    "dist",
+    "jest.config.js",
+    "package.json",
+    "tsup.config.js",
+    "version.js"
+  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
