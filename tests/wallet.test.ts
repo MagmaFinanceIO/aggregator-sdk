@@ -14,7 +14,7 @@ describe("router module", () => {
         "\nsecret:",
         secret,
         "\nkeypair public key: ",
-        keypair.toSuiAddress()
+        keypair.toSuiAddress(),
       )
     }
   })

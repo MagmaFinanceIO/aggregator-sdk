@@ -1,13 +1,16 @@
 // jest.config.mjs
 export default {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
+  preset: "ts-jest",
+  testEnvironment: "node",
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: './tsconfig.json'
-    }]
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        tsconfig: "./tsconfig.json",
+      },
+    ],
   },
   moduleNameMapper: {
-    '^~/(.*)$': '<rootDir>/src/$1'
-  }
-};
+    "^~/(.*)$": "<rootDir>/src/$1",
+  },
+}

@@ -1,44 +1,44 @@
-import { CoinAsset } from "../types/sui";
-import { CoinUtils } from "../types/CoinAssist";
-import { TransactionErrorCode } from "../errors";
+import { CoinAsset } from "../types/sui"
+import { CoinUtils } from "../types/CoinAssist"
+import { TransactionErrorCode } from "../errors"
 import {
   Transaction,
   TransactionObjectArgument,
-} from "@mysten/sui/transactions";
+} from "@mysten/sui/transactions"
 
 export function completionCoin(s: string): string {
-  const index = s.indexOf("::");
+  const index = s.indexOf("::")
   if (index === -1) {
-    return s;
+    return s
   }
-  const prefix = s.substring(0, index);
-  const rest = s.substring(index);
+  const prefix = s.substring(0, index)
+  const rest = s.substring(index)
   if (!prefix.startsWith("0x")) {
-    return s;
+    return s
   }
-  const hexStr = prefix.substring(2);
+  const hexStr = prefix.substring(2)
   if (hexStr.length > 64) {
-    return s;
+    return s
   }
-  const paddedHexStr = hexStr.padStart(64, "0");
-  return `0x${paddedHexStr}${rest}`;
+  const paddedHexStr = hexStr.padStart(64, "0")
+  return `0x${paddedHexStr}${rest}`
 }
 
 export function compareCoins(coinA: string, coinB: string): boolean {
-  coinA = completionCoin(coinA);
-  coinB = completionCoin(coinB);
-  const minLength = Math.min(coinA.length, coinB.length);
+  coinA = completionCoin(coinA)
+  coinB = completionCoin(coinB)
+  const minLength = Math.min(coinA.length, coinB.length)
 
   for (let i = 0; i < minLength; i++) {
     if (coinA[i] > coinB[i]) {
-      return true;
+      return true
     } else if (coinA[i] < coinB[i]) {
-      return false;
+      return false
     }
   }
 
   // If both strings are the same length and all characters are equal
-  return true; // or coinB, they are equal
+  return true // or coinB, they are equal
 }
 
 export function mintZeroCoin(
@@ -48,14 +48,14 @@ export function mintZeroCoin(
   return txb.moveCall({
     target: "0x2::coin::zero",
     typeArguments: [coinType],
-  });
+  })
 }
 
 export type BuildCoinResult = {
-  targetCoin: TransactionObjectArgument;
-  isMintZeroCoin: boolean;
-  targetCoinAmount: number;
-};
+  targetCoin: TransactionObjectArgument
+  isMintZeroCoin: boolean
+  targetCoinAmount: number
+}
 
 export function buildInputCoin(
   txb: Transaction,
@@ -63,75 +63,75 @@ export function buildInputCoin(
   amount: bigint,
   coinType: string,
 ): BuildCoinResult {
-  const usedCoinAsests = CoinUtils.getCoinAssets(coinType, allCoins);
+  const usedCoinAsests = CoinUtils.getCoinAssets(coinType, allCoins)
   if (amount === BigInt(0)) {
     if (
       CoinUtils.isSuiCoin(coinType) ||
       (usedCoinAsests.length === 0 && !CoinUtils.isSuiCoin(coinType))
     ) {
-      const zeroCoin = mintZeroCoin(txb, coinType);
+      const zeroCoin = mintZeroCoin(txb, coinType)
       return {
         targetCoin: zeroCoin,
         isMintZeroCoin: true,
         targetCoinAmount: 0,
-      };
+      }
     } else {
       return {
         targetCoin: txb.object(usedCoinAsests[0].coinObjectId),
         isMintZeroCoin: false,
         targetCoinAmount: Number(usedCoinAsests[0].balance.toString()),
-      };
+      }
     }
   }
 
-  let totalCoinBalance = CoinUtils.calculateTotalBalance(usedCoinAsests);
+  let totalCoinBalance = CoinUtils.calculateTotalBalance(usedCoinAsests)
   if (totalCoinBalance < amount) {
     throw new AggregateError(
       "Insufficient balance when build merge coin, coinType: " + coinType,
       TransactionErrorCode.InsufficientBalance + coinType,
-    );
+    )
   }
 
   if (CoinUtils.isSuiCoin(coinType)) {
     const resultCoin = txb.splitCoins(txb.gas, [
       txb.pure.u64(amount.toString()),
-    ]);
+    ])
     return {
       targetCoin: resultCoin,
       isMintZeroCoin: true,
       targetCoinAmount: Number(amount.toString()),
-    };
+    }
   }
 
   // sort used coin by amount, asc
-  let sortCoinAssets = CoinUtils.sortByBalance(usedCoinAsests);
+  let sortCoinAssets = CoinUtils.sortByBalance(usedCoinAsests)
 
   // find first three coin if greater than amount
   let totalThreeCoinBalance = sortCoinAssets
     .slice(0, 3)
-    .reduce((acc, coin) => acc + coin.balance, BigInt(0));
+    .reduce((acc, coin) => acc + coin.balance, BigInt(0))
   if (totalThreeCoinBalance < BigInt(amount)) {
-    sortCoinAssets = CoinUtils.sortByBalanceDes(usedCoinAsests);
+    sortCoinAssets = CoinUtils.sortByBalanceDes(usedCoinAsests)
   }
 
   let selectedCoinResult = CoinUtils.selectCoinObjectIdGreaterThanOrEqual(
     sortCoinAssets,
     amount,
-  );
-  const [masterCoin, ...mergedCoin] = selectedCoinResult.objectArray;
+  )
+  const [masterCoin, ...mergedCoin] = selectedCoinResult.objectArray
 
   if (mergedCoin.length > 0) {
     txb.mergeCoins(
       masterCoin,
       mergedCoin.map((coin) => txb.object(coin)),
-    );
+    )
   }
   const targetCoin = txb.splitCoins(txb.object(masterCoin), [
     txb.pure.u64(amount.toString()),
-  ]);
+  ])
   return {
     targetCoin,
     isMintZeroCoin: false,
     targetCoinAmount: Number(amount.toString()),
-  };
+  }
 }

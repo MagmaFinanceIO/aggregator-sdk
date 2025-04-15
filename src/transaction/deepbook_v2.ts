@@ -22,7 +22,7 @@ export class DeepbookV2 implements Dex {
 
   async getAccountCap(
     client: SuiClient,
-    owner: string
+    owner: string,
   ): Promise<string | null> {
     let limit = 50
     let cursor = null
@@ -59,7 +59,7 @@ export class DeepbookV2 implements Dex {
   async getOrCreateAccountCap(
     txb: Transaction,
     client: SuiClient,
-    owner: string
+    owner: string,
   ): Promise<GetOrCreateAccountCapResult> {
     let accountCapStr = await this.getAccountCap(client, owner)
     if (accountCapStr !== null) {
@@ -85,7 +85,7 @@ export class DeepbookV2 implements Dex {
     client: AggregatorClient,
     txb: Transaction,
     path: Path,
-    inputCoin: TransactionObjectArgument
+    inputCoin: TransactionObjectArgument,
   ): Promise<TransactionObjectArgument> {
     const { direction, from, target } = path
 
@@ -96,7 +96,7 @@ export class DeepbookV2 implements Dex {
     const accountCapRes = await this.getOrCreateAccountCap(
       txb,
       client.client,
-      client.signer
+      client.signer,
     )
 
     const args = [

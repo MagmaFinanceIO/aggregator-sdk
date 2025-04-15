@@ -12,7 +12,7 @@ export async function swapInPools(
   client: SuiClient,
   params: SwapInPoolsParams,
   sender: string,
-  env: Env
+  env: Env,
 ): Promise<SwapInPoolsResult> {
   const { from, target, amount, byAmountIn, pools } = params
   const fromCoin = completionCoin(from)
@@ -20,9 +20,10 @@ export async function swapInPools(
 
   const tx = new Transaction()
   const direction = compareCoins(fromCoin, targetCoin)
-  const integratePublishedAt = env === Env.Mainnet ?
-    "0x3a5aa90ffa33d09100d7b6941ea1c0ffe6ab66e77062ddd26320c1b073aabb10" :
-    "0x19dd42e05fa6c9988a60d30686ee3feb776672b5547e328d6dab16563da65293"
+  const integratePublishedAt =
+    env === Env.Mainnet
+      ? "0x3a5aa90ffa33d09100d7b6941ea1c0ffe6ab66e77062ddd26320c1b073aabb10"
+      : "0x19dd42e05fa6c9988a60d30686ee3feb776672b5547e328d6dab16563da65293"
   const coinA = direction ? fromCoin : targetCoin
   const coinB = direction ? targetCoin : fromCoin
 
@@ -46,7 +47,7 @@ export async function swapInPools(
   if (!checkInvalidSuiAddress(sender)) {
     throw new AggregateError(
       "Aggregator package not set",
-      ConfigErrorCode.InvalidWallet
+      ConfigErrorCode.InvalidWallet,
     )
   }
 
@@ -60,7 +61,7 @@ export async function swapInPools(
     console.log("simulateRes.error", simulateRes.error)
     throw new AggregateError(
       "Aggregator package not set",
-      ConfigErrorCode.SimulateError
+      ConfigErrorCode.SimulateError,
     )
   }
 
@@ -71,7 +72,7 @@ export async function swapInPools(
   if (valueData.length === 0 || valueData.length !== pools.length) {
     throw new AggregateError(
       "Simulate event result error",
-      TransactionErrorCode.SimulateEventError
+      TransactionErrorCode.SimulateEventError,
     )
   }
 
@@ -113,13 +114,13 @@ export async function swapInPools(
   if (decimalA == null || decimalB == null) {
     throw new AggregateError(
       "Simulate event result error",
-      TransactionErrorCode.CannotGetDecimals
+      TransactionErrorCode.CannotGetDecimals,
     )
   }
   const initialPrice = sqrtPriceX64ToPrice(
     currentSqrtPrice,
     decimalA!,
-    decimalB!
+    decimalB!,
   )
 
   const routeData = {
