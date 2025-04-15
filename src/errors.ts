@@ -54,7 +54,7 @@ export enum AggregatorServerErrorCode {
 }
 
 export function getAggregatorServerErrorMessage(
-  code: AggregatorServerErrorCode
+  code: AggregatorServerErrorCode,
 ): string {
   switch (code) {
     case AggregatorServerErrorCode.CalculateError:

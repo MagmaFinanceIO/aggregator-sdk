@@ -13,9 +13,10 @@ export class Scallop implements Dex {
       throw new Error("Scallop only supported on mainnet")
     }
 
-    this.version = env === Env.Mainnet
-      ? "0x07871c4b3c847a0f674510d4978d5cf6f960452795e8ff6f189fd2088a3f6ac7"
-      : "0x0"
+    this.version =
+      env === Env.Mainnet
+        ? "0x07871c4b3c847a0f674510d4978d5cf6f960452795e8ff6f189fd2088a3f6ac7"
+        : "0x0"
 
     this.market =
       env === Env.Mainnet
@@ -27,7 +28,7 @@ export class Scallop implements Dex {
     client: AggregatorClient,
     txb: Transaction,
     path: Path,
-    inputCoin: TransactionObjectArgument
+    inputCoin: TransactionObjectArgument,
   ): Promise<TransactionObjectArgument> {
     const { direction, from, target } = path
 

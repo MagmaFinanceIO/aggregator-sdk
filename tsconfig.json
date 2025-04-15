@@ -12,11 +12,8 @@
       "~/*": ["src/*"]
     },
     "allowJs": true,
-    "outDir": "dist/",
+    "outDir": "dist/"
   },
   "include": ["src", "tests"],
-  "exclude": [
-    "node_modules/**/*",
-    "dist/**/*",
-  ],
+  "exclude": ["node_modules/**/*", "dist/**/*"]
 }

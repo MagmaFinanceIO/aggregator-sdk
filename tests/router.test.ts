@@ -66,7 +66,7 @@ describe("router module", () => {
       amount: new BN(amount),
       byAmountIn,
       pools: [
-        '0xb8d7d9e66a60c239e7a60110efcf8de6c705580ed924d0dde141f4a0e2c90105'
+        "0xb8d7d9e66a60c239e7a60110efcf8de6c705580ed924d0dde141f4a0e2c90105",
       ],
     })
 
@@ -114,7 +114,8 @@ describe("router module", () => {
     const byAmountIn = true
     const amount = "400000000000"
     const from = "0x2::sui::SUI"
-    const target = "0xaf3aae4940a248739ce4964857381fc3f3149a6d05375bfbb2118592907e3bbb::dam::DAM"
+    const target =
+      "0xaf3aae4940a248739ce4964857381fc3f3149a6d05375bfbb2118592907e3bbb::dam::DAM"
 
     const res = await client.findRouters({
       from,
@@ -153,7 +154,7 @@ describe("router module", () => {
       for (const event of result.events) {
         console.log("event", JSON.stringify(event, null, 2))
       }
-      console.log("txb", )
+      console.log("txb")
 
       // if (result.effects.status.status === "success") {
       //   // console.log("Sim exec transaction success")
@@ -212,8 +213,18 @@ describe("router module", () => {
 
   test("Test Multi Input", async () => {
     const amounts = [1000000000, 2000000000, 10000000000000]
-    const froms = [testData.M_USDC, testData.M_SUI, testData.M_CETUS, testData.M_NAVI]
-    const tos = [testData.M_SUI, testData.M_USDC, testData.M_USDC, testData.M_SUI]
+    const froms = [
+      testData.M_USDC,
+      testData.M_SUI,
+      testData.M_CETUS,
+      testData.M_NAVI,
+    ]
+    const tos = [
+      testData.M_SUI,
+      testData.M_USDC,
+      testData.M_USDC,
+      testData.M_SUI,
+    ]
 
     for (let i = 0; i < froms.length; i++) {
       const from = froms[i]

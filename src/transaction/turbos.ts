@@ -21,7 +21,7 @@ export class Turbos implements Dex {
     client: AggregatorClient,
     txb: Transaction,
     path: Path,
-    inputCoin: TransactionObjectArgument
+    inputCoin: TransactionObjectArgument,
   ): Promise<TransactionObjectArgument> {
     const { direction, from, target } = path
 

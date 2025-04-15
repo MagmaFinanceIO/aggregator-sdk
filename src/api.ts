@@ -1,95 +1,95 @@
-import BN from "bn.js";
-import Decimal from "decimal.js";
-import { completionCoin } from "~/utils/coin";
-import { ZERO } from "./const";
+import BN from "bn.js"
+import Decimal from "decimal.js"
+import { completionCoin } from "~/utils/coin"
+import { ZERO } from "./const"
 import {
   AggregatorServerErrorCode,
   getAggregatorServerErrorMessage,
-} from "./errors";
-import { parseRouterResponse } from "./client";
+} from "./errors"
+import { parseRouterResponse } from "./client"
 
 export interface FindRouterParams {
-  from: string;
-  target: string;
-  amount: BN;
-  byAmountIn: boolean;
-  depth?: number;
-  splitAlgorithm?: string;
-  splitFactor?: number;
-  splitCount?: number;
-  providers?: string[];
-  liquidityChanges?: PreSwapLpChangeParams[];
+  from: string
+  target: string
+  amount: BN
+  byAmountIn: boolean
+  depth?: number
+  splitAlgorithm?: string
+  splitFactor?: number
+  splitCount?: number
+  providers?: string[]
+  liquidityChanges?: PreSwapLpChangeParams[]
 }
 
 export interface PreSwapLpChangeParams {
-  poolID: string;
-  ticklower: number;
-  tickUpper: number;
-  deltaLiquidity: number;
+  poolID: string
+  ticklower: number
+  tickUpper: number
+  deltaLiquidity: number
 }
 
 export type ExtendedDetails = {
-  aftermathPoolFlatness?: number;
-  aftermathLpSupplyType?: string;
-  turbosFeeType?: string;
-  afterSqrtPrice?: string;
-  deepbookv3DeepFee?: number;
-  scallopScoinTreasury?: string;
-};
+  aftermathPoolFlatness?: number
+  aftermathLpSupplyType?: string
+  turbosFeeType?: string
+  afterSqrtPrice?: string
+  deepbookv3DeepFee?: number
+  scallopScoinTreasury?: string
+}
 
 export type Path = {
-  id: string;
-  direction: boolean;
-  provider: string;
-  from: string;
-  target: string;
-  feeRate: number;
-  amountIn: number;
-  amountOut: number;
-  extendedDetails?: ExtendedDetails;
-  version?: string;
-};
+  id: string
+  direction: boolean
+  provider: string
+  from: string
+  target: string
+  feeRate: number
+  amountIn: number
+  amountOut: number
+  extendedDetails?: ExtendedDetails
+  version?: string
+}
 
 export type Router = {
-  path: Path[];
-  amountIn: BN;
-  amountOut: BN;
-  initialPrice: Decimal;
-};
+  path: Path[]
+  amountIn: BN
+  amountOut: BN
+  initialPrice: Decimal
+}
 
 export type RouterError = {
-  code: number;
-  msg: string;
-};
+  code: number
+  msg: string
+}
 
 export type RouterData = {
-  amountIn: BN;
-  amountOut: BN;
-  routes: Router[];
-  insufficientLiquidity: boolean;
-  totalDeepFee?: number;
-  error?: RouterError;
-};
+  amountIn: BN
+  amountOut: BN
+  routes: Router[]
+  insufficientLiquidity: boolean
+  totalDeepFee?: number
+  error?: RouterError
+}
 
 export type AggregatorResponse = {
-  code: number;
-  msg: string;
-  data: RouterData;
-};
+  code: number
+  msg: string
+  data: RouterData
+}
 
 export async function getRouterResult(
   endpoint: string,
   params: FindRouterParams,
 ): Promise<RouterData | null> {
-  let response;
+  let response
   if (params.liquidityChanges && params.liquidityChanges.length > 0) {
-    response = await postRouterWithLiquidityChanges(endpoint, params);
+    response = await postRouterWithLiquidityChanges(endpoint, params)
   } else {
-    response = await getRouter(endpoint, params);
+    response = await getRouter(endpoint, params)
   }
 
   if (!response) {
-    return null;
+    return null
   }
 
   if (!response.ok) {
@@ -104,14 +104,14 @@ export async function getRouterResult(
           AggregatorServerErrorCode.NumberTooLarge,
         ),
       },
-    };
+    }
   }
-  const data = await response.json();
+  const data = await response.json()
   if (data.data != null) {
-    const res = parseRouterResponse(data.data);
-    return res;
+    const res = parseRouterResponse(data.data)
+    return res
   }
-  const insufficientLiquidity = data.msg === "liquidity is not enough";
+  const insufficientLiquidity = data.msg === "liquidity is not enough"
 
   return {
     amountIn: ZERO,
@@ -124,7 +124,7 @@ export async function getRouterResult(
         AggregatorServerErrorCode.InsufficientLiquidity,
       ),
     },
-  };
+  }
 }
 
 async function getRouter(endpoint: string, params: FindRouterParams) {
@@ -139,42 +139,42 @@ async function getRouter(endpoint: string, params: FindRouterParams) {
       splitFactor,
       splitCount,
       providers,
-    } = params;
-    const fromCoin = completionCoin(from);
-    const targetCoin = completionCoin(target);
+    } = params
+    const fromCoin = completionCoin(from)
+    const targetCoin = completionCoin(target)
 
-    let url = `${endpoint}/find_routes?from=${fromCoin}&target=${targetCoin}&amount=${amount.toString()}&by_amount_in=${byAmountIn}`;
+    let url = `${endpoint}/find_routes?from=${fromCoin}&target=${targetCoin}&amount=${amount.toString()}&by_amount_in=${byAmountIn}`
 
     if (depth) {
-      url += `&depth=${depth}`;
+      url += `&depth=${depth}`
     }
 
     if (splitAlgorithm) {
-      url += `&split_algorithm=${splitAlgorithm}`;
+      url += `&split_algorithm=${splitAlgorithm}`
     }
 
     if (splitFactor) {
-      url += `&split_factor=${splitFactor}`;
+      url += `&split_factor=${splitFactor}`
     }
 
     if (splitCount) {
-      url += `&split_count=${splitCount}`;
+      url += `&split_count=${splitCount}`
     }
 
     if (providers) {
       if (providers.length > 0) {
-        url += `&providers=${providers.join(",")}`;
+        url += `&providers=${providers.join(",")}`
       }
     }
 
     // set newest sdk version
-    url += "&v=1000309";
+    url += "&v=1000309"
 
-    const response = await fetch(url);
-    return response;
+    const response = await fetch(url)
+    return response
   } catch (error) {
-    console.error(error);
-    return null;
+    console.error(error)
+    return null
   }
 }
 
@@ -193,12 +193,12 @@ async function postRouterWithLiquidityChanges(
     splitCount,
     providers,
     liquidityChanges,
-  } = params;
+  } = params
 
-  const fromCoin = completionCoin(from);
-  const targetCoin = completionCoin(target);
-  const url = `${endpoint}/find_routes`;
-  const providersStr = providers?.join(",");
+  const fromCoin = completionCoin(from)
+  const targetCoin = completionCoin(target)
+  const url = `${endpoint}/find_routes`
+  const providersStr = providers?.join(",")
   const requestData = {
     from: fromCoin,
     target: targetCoin,
@@ -215,7 +215,7 @@ async function postRouterWithLiquidityChanges(
       tick_upper: change.tickUpper,
       delta_liquidity: change.deltaLiquidity,
     })),
-  };
+  }
 
   try {
     const response = await fetch(url, {
@@ -224,44 +224,44 @@ async function postRouterWithLiquidityChanges(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(requestData),
-    });
+    })
 
-    return response;
+    return response
   } catch (error) {
-    console.error("Error:", error);
-    return null;
+    console.error("Error:", error)
+    return null
   }
 }
 
 export type DeepbookV3Config = {
-  id: string;
-  is_alternative_payment: boolean;
-  alternative_payment_amount: number;
-  trade_cap: string;
-  balance_manager: string;
-  deep_fee_vault: number;
-  whitelist: number;
-  package_version: 0;
+  id: string
+  is_alternative_payment: boolean
+  alternative_payment_amount: number
+  trade_cap: string
+  balance_manager: string
+  deep_fee_vault: number
+  whitelist: number
+  package_version: 0
   // unix timestamp in seconds
-  last_updated_time: number;
-  whitelist_pools: string[];
-};
+  last_updated_time: number
+  whitelist_pools: string[]
+}
 
 export type DeepbookV3ConfigResponse = {
-  code: number;
-  msg: string;
-  data: DeepbookV3Config;
-};
+  code: number
+  msg: string
+  data: DeepbookV3Config
+}
 
 export async function getDeepbookV3Config(
   endpoint: string,
 ): Promise<DeepbookV3ConfigResponse | null> {
-  const url = `${endpoint}/deepbookv3_config`;
+  const url = `${endpoint}/deepbookv3_config`
   try {
-    const response = await fetch(url);
-    return response.json() as Promise<DeepbookV3ConfigResponse>;
+    const response = await fetch(url)
+    return response.json() as Promise<DeepbookV3ConfigResponse>
   } catch (error) {
-    console.error("Error:", error);
-    return null;
+    console.error("Error:", error)
+    return null
   }
 }

@@ -36,7 +36,7 @@ export class Aftermath implements Dex {
       new BN(exportAmountOut)
         .mul(new BN(this.slippage))
         .div(new BN("1000000000000000000"))
-        .toString()
+        .toString(),
     )
   }
 
@@ -44,7 +44,7 @@ export class Aftermath implements Dex {
     client: AggregatorClient,
     txb: Transaction,
     path: Path,
-    inputCoin: TransactionObjectArgument
+    inputCoin: TransactionObjectArgument,
   ): Promise<TransactionObjectArgument> {
     const { direction, from, target } = path
 

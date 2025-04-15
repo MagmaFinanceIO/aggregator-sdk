@@ -13,6 +13,6 @@ export interface Dex {
     ptb: Transaction,
     path: Path,
     inputCoin: TransactionObjectArgument,
-    deepbookv3DeepFee?: TransactionObjectArgument
+    deepbookv3DeepFee?: TransactionObjectArgument,
   ): Promise<TransactionObjectArgument>
 }

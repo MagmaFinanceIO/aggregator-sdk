@@ -10,7 +10,7 @@ import Decimal from "decimal.js"
 export function CalculateAmountLimit(
   expectAmount: BN,
   byAmountIn: boolean,
-  slippage: number
+  slippage: number,
 ): number {
   let amountLimit = ZERO
   if (byAmountIn) {
@@ -29,7 +29,7 @@ export function CalculateAmountLimit(
 export function CalculateAmountLimitBN(
   expectAmount: BN,
   byAmountIn: boolean,
-  slippage: number
+  slippage: number,
 ): BN {
   let amountLimit = ZERO
   if (byAmountIn) {
@@ -59,7 +59,7 @@ export function GetDefaultSqrtPriceLimit(a2b: boolean): BN {
 export function sqrtPriceX64ToPrice(
   sqrtPriceStr: string,
   decimalsA: number,
-  decimalsB: number
+  decimalsB: number,
 ): Decimal {
   const sqrtPriceX64 = new Decimal(sqrtPriceStr).mul(Decimal.pow(2, -64))
   return sqrtPriceX64.pow(2).mul(Decimal.pow(10, decimalsA - decimalsB))
