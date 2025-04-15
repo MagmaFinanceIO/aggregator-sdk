@@ -47,7 +47,7 @@ export class MagmaDLMM implements Dex {
       txb.object(CLOCK_ADDRESS),
     ]
     const res = txb.moveCall({
-      target: `${client.publishedAtV3()}::magma_dlmm::${func}`,
+      target: `${client.publishedAtV4()}::magma_dlmm::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
     }) as TransactionArgument

@@ -33,7 +33,7 @@ export class Magma implements Dex {
     client: AggregatorClient,
     txb: Transaction,
     path: Path,
-    by_amount_in: boolean
+    by_amount_in: boolean,
   ): MagmaFlashSwapResult {
     const { direction, from, target } = path
     const [func, coinAType, coinBType] = direction
@@ -65,7 +65,7 @@ export class Magma implements Dex {
     txb: Transaction,
     path: Path,
     inputCoin: TransactionObjectArgument,
-    receipt: TransactionArgument
+    receipt: TransactionArgument,
   ): TransactionObjectArgument {
     const { direction, from, target } = path
     const [func, coinAType, coinBType] = direction
@@ -90,7 +90,7 @@ export class Magma implements Dex {
     client: AggregatorClient,
     txb: Transaction,
     path: Path,
-    inputCoin: TransactionObjectArgument
+    inputCoin: TransactionObjectArgument,
   ): Promise<TransactionObjectArgument> {
     const { direction, from, target } = path
     const [func, coinAType, coinBType] = direction
