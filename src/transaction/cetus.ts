@@ -106,7 +106,7 @@ export class Cetus implements Dex {
       target: `${client.publishedAt()}::cetus::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
-    }) as TransactionArgument
-    return res
+    })
+    return res[0] as TransactionObjectArgument
   }
 }

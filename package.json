@@ -1,6 +1,6 @@
 {
   "name": "@magmaprotocol/aggregator-sdk",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -41,7 +41,7 @@
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-typescript": "^7.24.1",
     "@jest/globals": "^29.7.0",
-    "@mysten/sui": "^1.6.0",
+    "@mysten/sui": "1.35.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.12.12",
     "babel-jest": "^29.7.0",

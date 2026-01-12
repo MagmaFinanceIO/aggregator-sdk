@@ -39,10 +39,10 @@ import { DeepbookV3 } from "./transaction/deepbook_v3"
 import { Scallop } from "./transaction/scallop"
 import { Suilend } from "./transaction/suilend"
 import { Magma } from "./transaction/magma"
-import { MagmaDLMM } from "./transaction/magma_dlmm"
+import { MagmaALMM } from "./transaction/magma_almm"
 
 export const MAGMA = "MAGMA"
-export const MAGMADLMM = "MAGMADLMM"
+export const MAGMAALMM = "MAGMAALMM"
 export const CETUS = "CETUS"
 export const DEEPBOOKV2 = "DEEPBOOK"
 export const KRIYA = "KRIYA"
@@ -96,29 +96,25 @@ export interface SwapInPoolsResult {
   routeData?: RouterData
 }
 
+export interface OtherConfig {
+  magmaGlobalConfig?: string
+  magmaPartner?: string
+  magmaAggregator?: string
+  almmfactory?: string;
+}
 export class AggregatorClient {
   public endpoint: string
   public signer: string
   public client: SuiClient
   public env: Env
   private allCoins: Map<string, CoinAsset[]>
-  private otherConfig?: {
-    magmaGlobalConfig?: string
-    magmaClmmPartner?: string
-    magmaClmmAggregator?: string
-    magmaDlmmPartner?: string
-    magmaDlmmAggregator?: string
-  }
+  private otherConfig?: OtherConfig
   constructor(
     endpoint?: string,
     signer?: string,
     client?: SuiClient,
     env?: Env,
-    otherConfig?: {
-      magmaGlobalConfig?: string
-      magmaPartner?: string
-      magmaAggregator?: string
-    },
+    otherConfig?: OtherConfig
   ) {
     this.endpoint = endpoint ? processEndpoint(endpoint) : DEFAULT_ENDPOINT
     this.client = client || new SuiClient({ url: getFullnodeUrl("mainnet") })
@@ -164,7 +160,7 @@ export class AggregatorClient {
       if (gotCoins.data.length < limit) {
         break
       }
-      cursor = gotCoins.data[limit - 1].coinObjectId
+      cursor = gotCoins.nextCursor
     }
 
     this.allCoins.set(coinType, allCoins)
@@ -437,8 +433,8 @@ export class AggregatorClient {
 
   // include magma
   publishedAtV3(): string {
-    if (this.otherConfig?.magmaClmmAggregator) {
-      return this.otherConfig.magmaClmmAggregator
+    if (this.otherConfig?.magmaAggregator) {
+      return this.otherConfig.magmaAggregator
     }
     if (this.env == Env.Mainnet) {
       return "0x7c90687fc8145b91bb246d602b83c44d5283efe20831f348da61618568bf5aa0"
@@ -447,15 +443,15 @@ export class AggregatorClient {
     }
   }
 
-  // include magma
+  // include magma almm
   publishedAtV4(): string {
-    if (this.otherConfig?.magmaClmmAggregator) {
-      return this.otherConfig.magmaClmmAggregator
+    if (this.otherConfig?.magmaAggregator) {
+      return this.otherConfig?.magmaAggregator
     }
     if (this.env == Env.Mainnet) {
-      return "0x663d8ef1d1d3408c2188b46f123fa61241b6a10b5b7a7ac089a22b9171b40254"
+      return "0xee6829339f3adf151fd4f912f33b244d966f4a64111c37280ea8016015781615"
     } else {
-      return "0x663d8ef1d1d3408c2188b46f123fa61241b6a10b5b7a7ac089a22b9171b40254"
+      return "0xee6829339f3adf151fd4f912f33b244d966f4a64111c37280ea8016015781615"
     }
   }
 
@@ -539,14 +535,15 @@ export class AggregatorClient {
       case MAGMA:
         return new Magma(
           this.env,
-          this.otherConfig?.magmaClmmPartner,
+          this.otherConfig?.magmaPartner,
           this.otherConfig?.magmaGlobalConfig,
         )
-      case MAGMADLMM:
-        return new MagmaDLMM(
+      case MAGMAALMM:
+        return new MagmaALMM(
           this.env,
-          this.otherConfig?.magmaDlmmPartner,
+          this.otherConfig?.magmaPartner,
           this.otherConfig?.magmaGlobalConfig,
+          this.otherConfig?.almmfactory
         )
       default:
         throw new Error(`Unsupported dex ${provider}`)

@@ -107,7 +107,8 @@ export class Magma implements Dex {
       target: `${client.publishedAtV3()}::magma_clmm::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
-    }) as TransactionArgument
-    return res
+    })
+    return res[0] as TransactionObjectArgument
+
   }
 }

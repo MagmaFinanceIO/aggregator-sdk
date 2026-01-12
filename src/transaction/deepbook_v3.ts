@@ -52,7 +52,7 @@ export class DeepbookV3 implements Dex {
       target: `${client.publishedAtV2()}::deepbookv3::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
-    }) as TransactionArgument
-    return res
+    })
+    return res[0] as TransactionObjectArgument
   }
 }
