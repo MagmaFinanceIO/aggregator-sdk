@@ -7,6 +7,7 @@ import {
   getAggregatorServerErrorMessage,
 } from "./errors"
 import { parseRouterResponse } from "./client"
+import { DarkPoolArg } from "./transaction/magma_dark_pool"
 
 export interface FindRouterParams {
   from: string
@@ -35,6 +36,7 @@ export type ExtendedDetails = {
   afterSqrtPrice?: string
   deepbookv3DeepFee?: number
   scallopScoinTreasury?: string
+  darkPoolProof?: DarkPoolArg
 }
 
 export type Path = {

@@ -40,9 +40,11 @@ import { Scallop } from "./transaction/scallop"
 import { Suilend } from "./transaction/suilend"
 import { Magma } from "./transaction/magma"
 import { MagmaALMM } from "./transaction/magma_almm"
+import { MagmaDarkPool } from "./transaction/magma_dark_pool"
 
 export const MAGMA = "MAGMA"
 export const MAGMAALMM = "MAGMAALMM"
+export const MAGMADARKPOOL = "MAGMADARKPOOL"
 export const CETUS = "CETUS"
 export const DEEPBOOKV2 = "DEEPBOOK"
 export const KRIYA = "KRIYA"
@@ -100,7 +102,8 @@ export interface OtherConfig {
   magmaGlobalConfig?: string
   magmaPartner?: string
   magmaAggregator?: string
-  almmfactory?: string;
+  almmfactory?: string
+  margmaDarkPool?: string
 }
 export class AggregatorClient {
   public endpoint: string
@@ -114,7 +117,7 @@ export class AggregatorClient {
     signer?: string,
     client?: SuiClient,
     env?: Env,
-    otherConfig?: OtherConfig
+    otherConfig?: OtherConfig,
   ) {
     this.endpoint = endpoint ? processEndpoint(endpoint) : DEFAULT_ENDPOINT
     this.client = client || new SuiClient({ url: getFullnodeUrl("mainnet") })
@@ -543,8 +546,10 @@ export class AggregatorClient {
           this.env,
           this.otherConfig?.magmaPartner,
           this.otherConfig?.magmaGlobalConfig,
-          this.otherConfig?.almmfactory
+          this.otherConfig?.almmfactory,
         )
+      case MAGMADARKPOOL:
+        return new MagmaDarkPool(this.env, this.otherConfig?.margmaDarkPool)
       default:
         throw new Error(`Unsupported dex ${provider}`)
     }

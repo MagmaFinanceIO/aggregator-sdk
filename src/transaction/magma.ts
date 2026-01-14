@@ -109,6 +109,5 @@ export class Magma implements Dex {
       arguments: args,
     })
     return res[0] as TransactionObjectArgument
-
   }
 }

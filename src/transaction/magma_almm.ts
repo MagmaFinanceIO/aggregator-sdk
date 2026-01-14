@@ -14,9 +14,14 @@ export type MagmaFlashSwapResult = {
 export class MagmaALMM implements Dex {
   private globalConfig: string
   private partner: string
-  private almmfactory: string;
+  private almmfactory: string
 
-  constructor(env: Env, partner?: string, globalConfig?: string, almmfactory?: string) {
+  constructor(
+    env: Env,
+    partner?: string,
+    globalConfig?: string,
+    almmfactory?: string,
+  ) {
     this.globalConfig =
       globalConfig ??
       (env === Env.Mainnet
@@ -30,7 +35,9 @@ export class MagmaALMM implements Dex {
         : "0x93635b84915696cab5e87ec04513fd782dee7f1ca6930b4577d42ccf1b585cea")
     this.almmfactory =
       almmfactory ??
-      (env === Env.Mainnet ? "0x29999aadee09eb031cc98a73b605805306d6ae0fe9d5099fb9e6628d99527234" : "");
+      (env === Env.Mainnet
+        ? "0x29999aadee09eb031cc98a73b605805306d6ae0fe9d5099fb9e6628d99527234"
+        : "")
   }
 
   async swap(
@@ -42,9 +49,9 @@ export class MagmaALMM implements Dex {
     const { direction, from, target } = path
     const [func, coinAType, coinBType] = direction
       ? ["swap_a2b", from, target]
-      : ["swap_b2a", target, from];
+      : ["swap_b2a", target, from]
     // adapter testnet without almmfactory
-    const exArgs = (this.almmfactory ? [txb.object(this.almmfactory)] : []);
+    const exArgs = this.almmfactory ? [txb.object(this.almmfactory)] : []
     const args = [
       ...exArgs,
       txb.object(this.globalConfig),
