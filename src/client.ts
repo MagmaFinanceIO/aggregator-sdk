@@ -624,7 +624,8 @@ export function parseRouterResponse(data: any): RouterData {
             path.provider === AFTERMATH ||
             path.provider === CETUS ||
             path.provider === DEEPBOOKV3 ||
-            path.provider === SCALLOP
+            path.provider === SCALLOP ||
+            path.provider === MAGMADARKPOOL
           ) {
             extendedDetails = {
               aftermathLpSupplyType:
@@ -634,6 +635,7 @@ export function parseRouterResponse(data: any): RouterData {
               deepbookv3DeepFee: path.extended_details?.deepbookv3_deep_fee,
               scallopScoinTreasury:
                 path.extended_details?.scallop_scoin_treasury,
+              darkPoolProof: path.extended_details?.dark_pool_proof,
             }
           }
 

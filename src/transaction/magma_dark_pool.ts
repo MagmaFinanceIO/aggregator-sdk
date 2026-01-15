@@ -12,23 +12,21 @@ export type MagmaFlashSwapResult = {
 }
 
 export type DarkPoolArg = {
-  pool: string
-  in_amount: number
+  pool_id: string
   indices: number[]
   use_amounts: number[]
   base_amounts: number[]
-  siblings_list: string[][]
-  directions_list: string[]
-  min_out: number
+  siblings: string[][]
+  directions: number[][]
   version: number
-  deadline: number
+  total_in: number
 }
 
 export class MagmaDarkPool implements Dex {
   private published_at: string
 
   constructor(env: Env, published_at?: string) {
-    this.published_at = published_at ?? (env === Env.Mainnet ? "" : "")
+    this.published_at = published_at ?? (env === Env.Mainnet ? "0x84dd0c69f8ae32dbb8bd9f1e02812c1438340ba0b03dec4905fb7a78f1c74e98" : "")
   }
 
   async swap(
@@ -43,50 +41,40 @@ export class MagmaDarkPool implements Dex {
       throw new Error("Dark pool proof is required for dark pool swap")
     }
     const {
-      pool,
-      in_amount,
+      pool_id,
+      total_in,
       indices,
       use_amounts,
       base_amounts,
-      siblings_list,
-      directions_list,
-      min_out,
+      siblings,
+      directions,
       version,
-      deadline,
     } = path.extendedDetails.darkPoolProof
+    const min_out = 1
+    const deadline = version + 500000
 
     const [func, coinAType, coinBType] = direction
-      ? ["swap_x_to_y_with_proof_external", from, path.target]
-      : ["swap_y_to_x_with_proof_external", target, from]
+      ? ["swap_x_to_y_with_proof_for_aggregator", from, target]
+      : ["swap_y_to_x_with_proof_for_aggregator", target, from]
 
-    // Build nested vector: directions_list: vector<vector<u8>>
-    const directionsVectorElements = directions_list.map((s) =>
-      txb.pure.vector("u8", Array.from(Buffer.from(s, "hex"))),
-    )
-    const directionsListVector = txb.makeMoveVec({
-      elements: directionsVectorElements,
-    })
+    const directionsListVector = txb.pure.vector('vector<u8>', directions)
 
-    // Build nested vector: siblings_list: vector<vector<vector<u8>>>
-    const siblingsVectorElements = siblings_list.map((siblings) =>
-      txb.makeMoveVec({
-        elements: siblings.map((s) =>
-          txb.pure.vector("u8", Array.from(Buffer.from(s, "hex"))),
-        ),
-      }),
-    )
-    const siblingsListVector = txb.makeMoveVec({
-      elements: siblingsVectorElements,
-    })
+    const siblingsListVector =
+      siblings.map(row =>
+        row.map(hexString => {
+          return Array.from(Buffer.from(hexString.replace(/^0x|\s/g, ''), "hex"))
+        })
+      )
+    const siblingsParams = txb.pure.vector('vector<vector<u8>>', siblingsListVector)
 
     const args = [
-      txb.object(pool), // self: &mut Pool<X, Y>
-      inputCoin, // mut in_coin: Coin<X>
-      txb.pure.u64(in_amount), // in_amount: u64
+      txb.object(pool_id),
+      inputCoin,
+      txb.pure.u64(total_in),
       txb.pure.vector("u64", indices), // indices: vector<u64>
       txb.pure.vector("u64", use_amounts), // use_amounts: vector<u64>
       txb.pure.vector("u64", base_amounts), // base_amounts: vector<u64>
-      siblingsListVector, // siblings_list: vector<vector<vector<u8>>>
+      siblingsParams, // siblings_list: vector<vector<vector<u8>>>
       directionsListVector, // directions_list: vector<vector<u8>>
       txb.pure.u64(min_out), // min_out: u64
       txb.pure.u64(version), // version: u64
@@ -94,7 +82,7 @@ export class MagmaDarkPool implements Dex {
       txb.object(CLOCK_ADDRESS), // clk: &Clock
     ]
     const res = txb.moveCall({
-      target: `${client.publishedAtV4()}::ebola::${func}`,
+      target: `${this.published_at}::ebola::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
     })
