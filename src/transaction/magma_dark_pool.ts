@@ -13,13 +13,15 @@ export type MagmaFlashSwapResult = {
 
 export type DarkPoolArg = {
   pool_id: string
-  indices: number[]
-  use_amounts: number[]
+  asks_root: string
+  bids_root: string
+  prices: number[]
   base_amounts: number[]
   siblings: string[][]
   directions: number[][]
-  version: number
   total_in: number
+  total_out: number
+  expires_at: number
 }
 
 export class MagmaDarkPool implements Dex {
@@ -42,16 +44,15 @@ export class MagmaDarkPool implements Dex {
     }
     const {
       pool_id,
-      total_in,
-      indices,
-      use_amounts,
+      prices,
       base_amounts,
       siblings,
       directions,
-      version,
+      total_in,
+      total_out,
+      expires_at,
     } = path.extendedDetails.darkPoolProof
     const min_out = 1
-    const deadline = version + 500000
 
     const [func, coinAType, coinBType] = direction
       ? ["swap_x_to_y_with_proof_for_aggregator", from, target]
@@ -71,15 +72,13 @@ export class MagmaDarkPool implements Dex {
       txb.object(pool_id),
       inputCoin,
       txb.pure.u64(total_in),
-      txb.pure.vector("u64", indices), // indices: vector<u64>
-      txb.pure.vector("u64", use_amounts), // use_amounts: vector<u64>
-      txb.pure.vector("u64", base_amounts), // base_amounts: vector<u64>
-      siblingsParams, // siblings_list: vector<vector<vector<u8>>>
-      directionsListVector, // directions_list: vector<vector<u8>>
-      txb.pure.u64(min_out), // min_out: u64
-      txb.pure.u64(version), // version: u64
-      txb.pure.u64(deadline), // deadline: u64
-      txb.object(CLOCK_ADDRESS), // clk: &Clock
+      txb.pure.vector("u64", base_amounts),
+      txb.pure.vector("u64", prices),
+      siblingsParams,
+      directionsListVector,
+      txb.pure.u64(min_out),
+      txb.pure.u64(expires_at),
+      txb.object(CLOCK_ADDRESS),
     ]
     const res = txb.moveCall({
       target: `${this.published_at}::corona::${func}`,
