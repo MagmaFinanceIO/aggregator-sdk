@@ -28,7 +28,7 @@ export class MagmaDarkPool implements Dex {
   private published_at: string
 
   constructor(env: Env, published_at?: string) {
-    this.published_at = published_at ?? (env === Env.Mainnet ? "0xb796d07fff819b75d1085514399130f0a94d039f76ceadb7a09153beee7f94a9" : "")
+    this.published_at = published_at ?? (env === Env.Mainnet ? "0x62a4a18ba87e885d569224ea50791b537373617210f5436d38e0ded638ca312b" : "")
   }
 
   async swap(
