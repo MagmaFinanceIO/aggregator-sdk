@@ -82,7 +82,7 @@ export class MagmaDarkPool implements Dex {
       txb.object(CLOCK_ADDRESS), // clk: &Clock
     ]
     const res = txb.moveCall({
-      target: `${this.published_at}::ebola::${func}`,
+      target: `${this.published_at}::corona::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
     })
