@@ -458,6 +458,17 @@ export class AggregatorClient {
     }
   }
 
+  publishedAtV5(): string {
+    if (this.otherConfig?.magmaAggregator) {
+      return this.otherConfig?.magmaAggregator
+    }
+    if (this.env == Env.Mainnet) {
+      return "0xa0b37c90f012784ea4888f4c75b166e0f592845f2e5f2585b6172ae6daddac08"
+    } else {
+      return "0xa0b37c90f012784ea4888f4c75b166e0f592845f2e5f2585b6172ae6daddac08"
+    }
+  }
+
   deepbookv3DeepFeeType(): string {
     if (this.env === Env.Mainnet) {
       return "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP"

@@ -49,7 +49,7 @@ export class Magma implements Dex {
       txb.object(CLOCK_ADDRESS),
     ]
     const res: TransactionObjectArgument[] = txb.moveCall({
-      target: `${client.publishedAtV3()}::magma_clmm::${func}`,
+      target: `${client.publishedAtV5()}::magma_clmm::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
     })
@@ -79,7 +79,7 @@ export class Magma implements Dex {
       receipt,
     ]
     const res = txb.moveCall({
-      target: `${client.publishedAtV3()}::magma_clmm::${func}`,
+      target: `${client.publishedAtV5()}::magma_clmm::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
     })
@@ -104,7 +104,7 @@ export class Magma implements Dex {
       txb.object(CLOCK_ADDRESS),
     ]
     const res = txb.moveCall({
-      target: `${client.publishedAtV3()}::magma_clmm::${func}`,
+      target: `${client.publishedAtV5()}::magma_clmm::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
     })

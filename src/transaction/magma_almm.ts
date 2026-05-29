@@ -61,7 +61,7 @@ export class MagmaALMM implements Dex {
       txb.object(CLOCK_ADDRESS),
     ]
     const res = txb.moveCall({
-      target: `${client.publishedAtV4()}::magma_almm::${func}`,
+      target: `${client.publishedAtV5()}::magma_almm::${func}`,
       typeArguments: [coinAType, coinBType],
       arguments: args,
     })
