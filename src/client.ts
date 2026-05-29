@@ -483,7 +483,7 @@ export class AggregatorClient {
     coinType: string,
   ) {
     txb.moveCall({
-      target: `${this.publishedAtV3()}::utils::transfer_or_destroy_coin`,
+      target: `${this.publishedAtV5()}::utils::transfer_or_destroy_coin`,
       typeArguments: [coinType],
       arguments: [coin],
     })
@@ -507,7 +507,7 @@ export class AggregatorClient {
     }
 
     txb.moveCall({
-      target: `${this.publishedAtV3()}::utils::check_coin_threshold`,
+      target: `${this.publishedAtV5()}::utils::check_coin_threshold`,
       typeArguments: [coinType],
       arguments: [targetCoin, txb.pure.u64(amountLimit.toString())],
     })

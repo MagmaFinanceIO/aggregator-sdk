@@ -19,13 +19,13 @@ export class Magma implements Dex {
     this.globalConfig =
       globalConfig ??
       (env === Env.Mainnet
-        ? "0x680dc99b0e428883e94518612484a7579a3de364af391307e37f63065b1524e2"
+        ? "0x4c4e1402401f72c7d8533d0ed8d5f8949da363c7a3319ccef261ffe153d32f8a"
         : "0x61f231024561d4dcf9099986a6944dc4be35ee489bdc61a3252a831a06f20b9d")
 
     this.partner =
       partner ??
       (env === Env.Mainnet
-        ? "0xd55811aa24562c6883cde8736f196f992d7a9b07d4b701408f1b5011cdd67a13"
+        ? "0x62ffdbc74413b9d1544d9c91fa068f4fa3fd4c47c1f92f3c8d4c817e1591cad9"
         : "0x00bf176a399bd15edbfc8f1ed778733cf3162bd27259b5f765ca1a7a45486248")
   }
 
